@@ -6,7 +6,9 @@ if azd_env=$(azd env get-values); then
   export $(echo "$azd_env" | xargs)
 fi
 
-echo 'Uploading PDF files to the ingestion API'
-curl -F "file=@./data/privacy-policy.pdf" "${INGESTION_API_URI:-http://localhost:3001}/documents"
-curl -F "file=@./data/support.pdf" "${INGESTION_API_URI:-http://localhost:3001}/documents"
-curl -F "file=@./data/terms-of-service.pdf" "${INGESTION_API_URI:-http://localhost:3001}/documents"
+echo 'Uploading JSON file to the ingestion API'
+curl -F "file=@./data/pages.json" "${INGESTION_API_URI:-http://localhost:3001}/jsonDocuments"
+
+# curl -F "file=@./data/privacy-policy.pdf" "${INGESTION_API_URI:-http://localhost:3001}/documents"
+# curl -F "file=@./data/support.pdf" "${INGESTION_API_URI:-http://localhost:3001}/documents"
+# curl -F "file=@./data/terms-of-service.pdf" "${INGESTION_API_URI:-http://localhost:3001}/documents"

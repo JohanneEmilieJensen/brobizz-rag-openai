@@ -25,6 +25,29 @@ const root: FastifyPluginAsync = async (fastify, _options): Promise<void> => {
       reply.internalServerError(`Internal server error: ${error.message}`);
     }
   });
-};
+
+  fastify.post('/jsonDocuments', async function (request, reply) {
+    // Input file contains JSON array of documents each with a "text" and a "source" field
+    const { file } = request.body as any;
+    if (file.type !== 'file') {
+      return reply.badRequest('field "file" must be a file');
+    }
+    try {
+      const filesInfos = {
+        filename: file.filename,
+        data: await file.toBuffer(),
+        type: file.mimetype,
+      };
+      fastify.log.info(`Ingesting JSON file "${filesInfos.filename}"...`);
+      await fastify.ingestion.ingestJsonFile(filesInfos);
+      reply.send({ message: `Successfully ingested JSON file "${filesInfos.filename}"` });
+    } catch (_error: unknown) {
+      const error = _error as Error;
+      fastify.log.error(error);
+      reply.internalServerError(`Internal server error: ${error.message}`);
+    }
+  });
+}
+
 
 export default root;

@@ -50,7 +50,7 @@ export const defaultOptions: ChatComponentOptions = {
   apiUrl: '',
   enablePromptSuggestions: true,
   promptSuggestions: [
-    'How to search and book rentals?',
+    'Hvordan ændrer jeg min Brobizz?',
     'What is the refund policy?',
     'How to contact a representative?',
   ],
@@ -228,11 +228,11 @@ export class ChatComponent extends LitElement {
         <h2>${this.options.strings.promptSuggestionsTitle}</h2>
         <div class="suggestions">
           ${map(
-            suggestions,
-            (suggestion) => html`
+      suggestions,
+      (suggestion) => html`
               <button class="suggestion" @click=${() => this.onSuggestionClicked(suggestion)}>${suggestion}</button>
             `,
-          )}
+    )}
         </div>
       </section>
     `;
@@ -255,7 +255,7 @@ export class ChatComponent extends LitElement {
     return html`
       <div class="message ${message.role} animation">
         ${message.role === 'assistant'
-          ? html`<slot name="message-header">
+        ? html`<slot name="message-header">
               <div class="debug-buttons">
                 <button
                   class="button"
@@ -266,17 +266,17 @@ export class ChatComponent extends LitElement {
                 </button>
               </div>
             </slot>`
-          : nothing}
+        : nothing}
         <div class="message-body">
           <div class="content">${message.html}</div>
           ${message.citations.length > 0
-            ? html`
+        ? html`
                 <div class="citations">
                   <div class="citations-title">${this.options.strings.citationsTitle}</div>
                   ${map(message.citations, this.renderCitation)}
                 </div>
               `
-            : nothing}
+        : nothing}
         </div>
         <div class="message-role">
           ${message.role === 'user' ? this.options.strings.user : this.options.strings.assistant}
@@ -315,13 +315,13 @@ export class ChatComponent extends LitElement {
             <span class="question-icon" title=${this.options.strings.followUpQuestionsTitle}>
               ${unsafeSVG(questionSvg)} </span
             >${map(
-              questions,
-              (question) => html`
+        questions,
+        (question) => html`
                 <button class="question animation" @click=${() => this.onSuggestionClicked(question)}>
                   ${question}
                 </button>
               `,
-            )}
+      )}
           </div>
         `
       : nothing;
@@ -368,8 +368,8 @@ export class ChatComponent extends LitElement {
         ${this.options.enablePromptSuggestions &&
         this.options.promptSuggestions.length > 0 &&
         this.messages.length === 0
-          ? this.renderSuggestions(this.options.promptSuggestions)
-          : nothing}
+        ? this.renderSuggestions(this.options.promptSuggestions)
+        : nothing}
         <div class="messages">
           ${repeat(parsedMessages, (_, index) => index, this.renderMessage)} ${this.renderLoader()}
           ${this.hasError ? this.renderError() : nothing}

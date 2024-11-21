@@ -9,9 +9,36 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { type VectorStore } from '@langchain/core/vectorstores';
 import { type FileInfos } from '../lib/file.js';
 import { unusedService } from './config.js';
+import { TextLoader } from 'langchain/document_loaders/fs/text';
 
 export class IngestionService {
-  constructor(private vectorStore: VectorStore) {}
+  constructor(private vectorStore: VectorStore) { }
+
+  async ingestJsonFile(file: FileInfos) {
+    // File contains a list of json objects with text and source fields.
+    // Extract and add a document for each object in the list.
+    const text = file.data.toString();
+    const documents = JSON.parse(text);
+
+    for (const document of documents) {
+      const loader = new TextLoader(document.text);
+      const rawDocuments = await loader.load();
+      rawDocuments[0].metadata.source = document.source;
+
+      // Split the text into smaller chunks
+      const splitter = new RecursiveCharacterTextSplitter({
+        chunkSize: 1500,
+        chunkOverlap: 100,
+      });
+      const documents = await splitter.splitDocuments(rawDocuments);
+
+      // Delete existing documents for the same source
+      await this.deleteDocuments(document.source);
+
+      // Generate embeddings and save in database
+      await this.vectorStore.addDocuments(documents);
+    }
+  }
 
   async ingestFile(file: FileInfos) {
     // Extract text from the PDF
